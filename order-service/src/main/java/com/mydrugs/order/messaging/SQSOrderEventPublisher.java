@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -33,14 +34,24 @@ public class SQSOrderEventPublisher implements EventPublisher<Order> {
     public void publishEvent(Order order) {
         try {
             String messageBody = objectMapper.writeValueAsString(order);
+            // TODO: We can use a group by the shop
+            String messageGroupId = "teaMates";
+           String deduplicationId = order.getCustomerId() + "-" + System.currentTimeMillis(); // unique per message.// unique per message.
+
             SendResult<String> result = sqsTemplate.send(to -> to
                     .payload(messageBody)
                     .queue(sqsProperties.getQueueName())
-                    .headers(Map.of("key", "value"))
+                    .headers(Map.of(
+                            "message-group-id", messageGroupId,
+                            "message-deduplication-id", deduplicationId,
+                            "key", "value"
+                    ))
                     .delaySeconds(10)
             );
 
-            log.info("Published order {} to SQS", order.getOrderNumber());
+
+
+            log.info("Published order {} to SQS: {}", result.endpoint(), result.message());
         } catch (JsonProcessingException e) {
             log.error("Failed to serialize order for SQS", e);
         }
