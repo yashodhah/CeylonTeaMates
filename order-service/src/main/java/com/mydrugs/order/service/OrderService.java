@@ -1,12 +1,11 @@
 package com.mydrugs.order.service;
 
-import com.mydrugs.order.controller.OrderRequest;
+import com.mydrugs.order.model.CreateOrderRequest;
 import com.mydrugs.order.messaging.EventPublisher;
 import com.mydrugs.order.model.Order;
 import com.mydrugs.order.model.OrderItem;
-import com.mydrugs.order.model.Product;
 import com.mydrugs.order.repository.OrderRepository;
-import com.mydrugs.order.repository.ProductRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,25 +16,20 @@ import java.util.stream.Collectors;
 @Service
 public class OrderService {
 
-    private final OrderRepository orderRepository;
-    private final ProductRepository productRepository;
-    private final EventPublisher orderEventPublisher;
-
-    public OrderService(OrderRepository orderRepository,
-                        ProductRepository productRepository,
-                        EventPublisher orderEventPublisher) {
-        this.orderRepository = orderRepository;
-        this.productRepository = productRepository;
-        this.orderEventPublisher = orderEventPublisher;
-    }
+    @Autowired
+    private  OrderRepository orderRepository;
+    @Autowired
+    private OrderValidationService orderValidationService;
+    @Autowired
+    private  EventPublisher orderEventPublisher;
 
     @Transactional
-    public Order createOrder(OrderRequest orderRequest) {
+    public Order createOrder(CreateOrderRequest createOrderRequest) {
+
+        orderValidationService.validate(createOrderRequest);
         // Fetch products & validate stock
-        List<OrderItem> orderItems = orderRequest.items().stream()
+        List<OrderItem> orderItems = createOrderRequest.items().stream()
                 .map(item -> {
-                    Product product = productRepository.findById(item.id())
-                            .orElseThrow(() -> new IllegalArgumentException("Product not found: " + item.id()));
 
                     return OrderItem.builder()
                             .product(product)
@@ -44,11 +38,11 @@ public class OrderService {
                 })
                 .collect(Collectors.toList());
 
+        // we need third party payment service to process payment
+
         // Create order entity
         Order order = Order.builder()
                 .orderNumber("ORD-" + System.currentTimeMillis()) // Meaningful order number
-                .customerId(orderRequest.customerId())
-                .totalAmount(orderRequest.totalAmount())
                 .status(Order.OrderStatus.PENDING)
                 .createdAt(Instant.now())
                 .items(orderItems)
@@ -59,6 +53,7 @@ public class OrderService {
 
         // Save order & publish event
         Order savedOrder = orderRepository.save(order);
+
         // TODO: Send only required, Don't send the whole order
         orderEventPublisher.publishEvent(savedOrder);
 

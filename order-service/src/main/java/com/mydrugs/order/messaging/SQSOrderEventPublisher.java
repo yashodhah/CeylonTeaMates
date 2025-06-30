@@ -42,14 +42,11 @@ public class SQSOrderEventPublisher implements EventPublisher<Order> {
                     .payload(messageBody)
                     .queue(sqsProperties.getQueueName())
                     .headers(Map.of(
-                            "message-group-id", messageGroupId,
-                            "message-deduplication-id", deduplicationId,
-                            "key", "value"
+                            "message-group-productId", messageGroupId,
+                            "message-deduplication-productId", deduplicationId,
                     ))
                     .delaySeconds(10)
             );
-
-
 
             log.info("Published order {} to SQS: {}", result.endpoint(), result.message());
         } catch (JsonProcessingException e) {

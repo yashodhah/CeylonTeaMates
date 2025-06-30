@@ -1,4 +1,4 @@
-package com.mydrugs.order.model;
+package com.mydrugs.orderprocessing.model;
 
 import jakarta.persistence.*;
 import lombok.*;

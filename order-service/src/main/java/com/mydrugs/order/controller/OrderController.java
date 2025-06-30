@@ -1,5 +1,6 @@
 package com.mydrugs.order.controller;
 
+import com.mydrugs.order.model.CreateOrderRequest;
 import com.mydrugs.order.model.Order;
 import com.mydrugs.order.service.OrderService;
 import org.springframework.http.ResponseEntity;
@@ -18,8 +19,8 @@ public class OrderController {
     }
 
     @PostMapping
-    public ResponseEntity<Order> createOrder(@RequestBody OrderRequest orderRequest) {
-        return ResponseEntity.ok(orderService.createOrder(orderRequest));
+    public ResponseEntity<Order> placeOrder(@RequestBody CreateOrderRequest createOrderRequest) {
+        return ResponseEntity.ok(orderService.createOrder(createOrderRequest));
     }
 
     @GetMapping("/{orderNumber}")

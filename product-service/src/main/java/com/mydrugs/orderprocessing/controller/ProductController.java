@@ -1,7 +1,7 @@
-package com.mydrugs.order.controller;
+package com.mydrugs.orderprocessing.controller;
 
-import com.mydrugs.order.model.Product;
-import com.mydrugs.order.repository.ProductRepository;
+import com.mydrugs.orderprocessing.model.Product;
+import com.mydrugs.orderprocessing.repository.ProductRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
