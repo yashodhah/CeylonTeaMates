@@ -47,5 +47,6 @@ build/
 
 ### Application specific files ###
 build.sh
+venv/
 
 

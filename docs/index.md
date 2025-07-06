@@ -1,6 +1,6 @@
 # Ceylon Tea Mates
 
-![assets_task_01jz0chpj4eebtd7jec6v1n1cc_1751286133_img_0.webp](images/assets_task_01jz0chpj4eebtd7jec6v1n1cc_1751286133_img_0.webp)
+![assets_task_01jz0chpj4eebtd7jec6v1n1cc_1751286133_img_0.webp](images/logo.webp)
 
 Welcome to the documentation for the Ceylon Tea Mates online tea ordering system.
 
