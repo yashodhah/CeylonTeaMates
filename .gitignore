@@ -45,4 +45,7 @@ build/
 .terraform.lock.hcl
 *.tfvars
 
+### Application specific files ###
+build.sh
+
 

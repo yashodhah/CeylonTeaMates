@@ -10,9 +10,7 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>order-service</module>
-        <module>order-processing-service</module>
-        <module>notification-service</module>
+        <module>teamates-service</module>
     </modules>
 
     <properties>
