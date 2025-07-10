@@ -2,10 +2,11 @@ name: TeaMates CI/CD
 
 on:
   push:
-#    branches: [main]
+    branches: [main]
     paths:                     # ──▶ trigger only if ANY of these paths change
       - 'pom.xml'
       - 'teamates-service/**'
+  workflow_dispatch:   # Enables manual trigger
 
 permissions:
   id-token: write
