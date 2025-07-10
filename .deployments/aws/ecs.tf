@@ -1,3 +1,8 @@
+locals {
+  container_name = "teamates-service"
+  container_port = 8080
+}
+
 module "ecs_cluster" {
   source = "terraform-aws-modules/ecs/aws//modules/cluster"
   name   = local.name
@@ -20,9 +25,9 @@ module "ecs_cluster" {
 # Service
 ################################################################################
 
-module "ecs_teamates_core_service" {
+module "ecs_service" {
   source      = "terraform-aws-modules/ecs/aws//modules/service"
-  name        = "teamates-service"
+  name        = "${local.name}-core-svc"
   cluster_arn = module.ecs_cluster.arn
 
   cpu    = 512
@@ -32,7 +37,7 @@ module "ecs_teamates_core_service" {
   enable_execute_command = true
 
   container_definitions = {
-    teamates-service = {
+    (local.container_name) = {
       cpu       = 512
       memory    = 1024
       essential = true
@@ -43,8 +48,8 @@ module "ecs_teamates_core_service" {
       ]
 
       port_mappings = [{
-        containerPort = 8080
-        hostPort      = 8080
+        containerPort = local.container_port
+        hostPort      = local.container_port
         protocol      = "tcp"
       }]
 
@@ -61,8 +66,8 @@ module "ecs_teamates_core_service" {
 
   security_group_ingress_rules = {
     alb_8080 = {
-      from_port                    = 8080
-      to_port                      = 8080
+      from_port                    = local.container_port
+      to_port                      = local.container_port
       ip_protocol                  = "tcp"
       description                  = "Service port"
       referenced_security_group_id = module.alb.security_group_id
@@ -79,9 +84,9 @@ module "ecs_teamates_core_service" {
 
   load_balancer = {
     service = {
-      target_group_arn = module.alb.target_groups["teamates-service"].arn
-      container_name   = "teamates-service"
-      container_port   = 8080
+      target_group_arn = module.alb.target_groups["teamates-ecs"].arn
+      container_name   = local.container_name
+      container_port   = local.container_port
     }
   }
 

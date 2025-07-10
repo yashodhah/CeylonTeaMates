@@ -1,3 +1,7 @@
+locals {
+  tg_name = "teamates-ecs"
+}
+
 module "alb" {
   source = "terraform-aws-modules/alb/aws"
   name   = local.name
@@ -32,14 +36,14 @@ module "alb" {
       protocol = "HTTP"
 
       forward = {
-        target_group_key = "teamates-service"
+        target_group_key = local.tg_name
       }
     }
   }
 
   target_groups = {
-    teamates-service = {
-      name                              = "tg-teamates-service"
+    (local.tg_name) = {
+      name                              = local.tg_name
       backend_protocol                  = "HTTP"
       backend_port                      = 8080
       target_type                       = "ip"
