@@ -32,14 +32,14 @@ module "alb" {
       protocol = "HTTP"
 
       forward = {
-        target_group_key = "order-service"
+        target_group_key = "teamates-service"
       }
     }
   }
 
   target_groups = {
-    order-service = {
-      name                              = "tg-order-service"
+    teamates-service = {
+      name                              = "tg-teamates-service"
       backend_protocol                  = "HTTP"
       backend_port                      = 8080
       target_type                       = "ip"
