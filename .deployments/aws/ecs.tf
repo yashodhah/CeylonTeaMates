@@ -25,9 +25,9 @@ module "ecs_cluster" {
 # Service
 ################################################################################
 
-module "ecs_service" {
+module "ecs_teamates_core_service" {
   source = "terraform-aws-modules/ecs/aws//modules/service"
-  name   = "order-service"
+  name   = "teamates-service"
   cluster_arn = module.ecs_cluster.arn
 
   cpu    = 512
@@ -41,11 +41,10 @@ module "ecs_service" {
       cpu       = 512
       memory    = 1024
       essential = true
-      image     = "${var.ecr_registry}/order-service:latest"
+      image     = "${var.ecr_registry}/teamates-service:latest"
 
       environment = [
-        { name = "SPRING_PROFILES_ACTIVE", value = "aws" },
-        { name = "SQS_QUEUE_NAME", value = "mydrugs_orderPlaced" }
+        { name = "SPRING_PROFILES_ACTIVE", value = "aws" }
       ]
 
       port_mappings = [{
@@ -84,27 +83,16 @@ module "ecs_service" {
 
   load_balancer = {
     service = {
-      target_group_arn = module.alb.target_groups["order-service"].arn
-      container_name   = "order-service"
+      target_group_arn = module.alb.target_groups["teamates-service"].arn
+      container_name   = "teamates-service"
       container_port   = 8080
     }
   }
 
-  tasks_iam_role_name        = "${local.name}-order-service-task-role"
-  tasks_iam_role_description = "IAM role for order-service ECS task to send messages to SQS"
+  tasks_iam_role_name        = "${local.name}-teamates-service-task-role"
+  tasks_iam_role_description = "IAM role for teamates-service ECS task"
 
   tasks_iam_role_statements = [
-    {
-      actions = [
-        "sqs:SendMessage",
-        "sqs:GetQueueAttributes",
-        "sqs:GetQueueUrl"
-      ]
-      resources = [
-        module.sqs_queue.queue_arn # Reference to your SQS module's output
-      ]
-
-    },
     {
       actions = [
         "ecr:GetAuthorizationToken",
