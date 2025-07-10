@@ -32,7 +32,7 @@ module "ecs_teamates_core_service" {
   enable_execute_command = true
 
   container_definitions = {
-    order-service = {
+    teamates-service = {
       cpu       = 512
       memory    = 1024
       essential = true
@@ -107,6 +107,5 @@ module "ecs_teamates_core_service" {
     }
   ]
   tags = local.tags
-
 }
 

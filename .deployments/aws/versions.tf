@@ -7,10 +7,10 @@ terraform {
       version = ">= 6.0.0"
     }
   }
-  #
-  # backend "s3" {
-  #   bucket = "dev.labs.yashodha.terraform"
-  #   key    = "dev"
-  #   region = "ap-southeast-1"
-  # }
+
+  backend "s3" {
+    bucket = "dev.labs.yashodha.terraform"
+    key    = "dev"
+    region = "ap-southeast-1"
+  }
 }
