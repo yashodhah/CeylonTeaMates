@@ -9,3 +9,4 @@ WORKDIR /app
 COPY ${JAR_FILE} ./app.jar
 
 ENTRYPOINT ["java","-jar","/app/app.jar"]
+EXPOSE 8080

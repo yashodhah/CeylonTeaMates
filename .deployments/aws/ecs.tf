@@ -48,7 +48,8 @@ module "ecs_service" {
         { name = "SPRING_PROFILES_ACTIVE", value = "aws" }
       ]
 
-      port_mappings = [{
+      port_mappings = [  {
+        name          = local.container_name
         containerPort = local.container_port
         hostPort      = local.container_port
         protocol      = "tcp"
