@@ -24,34 +24,6 @@ data "aws_iam_policy_document" "ecr_endpoint_policy" {
   }
 }
 
-data "aws_iam_policy_document" "sqs_endpoint_policy" {
-  statement {
-    effect = "Allow"
-
-    principals {
-      type        = "*"
-      identifiers = ["*"]
-    }
-
-    actions = [
-      "sqs:SendMessage",
-      "sqs:ReceiveMessage",
-      "sqs:DeleteMessage",
-      "sqs:GetQueueAttributes",
-      "sqs:GetQueueUrl"
-    ]
-
-    resources = ["*"]
-
-    condition {
-      test     = "StringEquals"
-      variable = "aws:SourceVpc"
-      values   = [module.vpc.vpc_id]
-    }
-  }
-}
-
-
 
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
@@ -121,12 +93,6 @@ module "vpc_endpoints" {
       private_dns_enabled = true
       subnet_ids          = module.vpc.private_subnets
       policy              = data.aws_iam_policy_document.ecr_endpoint_policy.json
-    },
-    sqs = {
-      service             = "sqs"
-      private_dns_enabled = true
-      subnet_ids          = module.vpc.private_subnets
-      policy              = data.aws_iam_policy_document.sqs_endpoint_policy.json
     },
     sts = {
       service             = "sts"

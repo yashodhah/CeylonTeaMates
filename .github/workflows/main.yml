@@ -4,10 +4,8 @@ on:
   push:
     branches: [main]
     paths:                     # ──▶ trigger only if ANY of these paths change
-      - 'pom.xml'              # root POM
-      - 'order-service/**'
-      - 'order-processing-service/**'
-      - 'notification-service/**'
+      - 'pom.xml'
+      - 'teamates-service/**'
 
 permissions:
   id-token: write
@@ -19,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        service: ["order-service", "order-processing-service", "notification-service"]
+        service: ["teamates-service"]
     steps:
       - name: 📥 Checkout code
         uses: actions/checkout@v4
@@ -34,13 +32,13 @@ jobs:
         run: ./mvnw -B clean compile -pl ${{ matrix.service }} -am -DskipTests
 
   build-and-push:
-    name: Build JAR & Push Docker
+    name: Build JAR & Push Docker Image
     runs-on: ubuntu-latest
     needs: compile
     environment: development
     strategy:
       matrix:
-        service: ["order-service", "order-processing-service", "notification-service"]
+        service: ["teamates-service"]
     steps:
       - name: 📥 Checkout code
         uses: actions/checkout@v4
