@@ -26,11 +26,9 @@ data "aws_iam_policy_document" "ecr_endpoint_policy" {
 
 
 module "vpc" {
-  source  = "terraform-aws-modules/vpc/aws"
-  version = "5.18.1"
-
-  name = local.name
-  cidr = "10.16.0.0/16"
+  source = "terraform-aws-modules/vpc/aws"
+  name   = local.name
+  cidr   = "10.16.0.0/16"
 
   azs              = ["ap-southeast-1a", "ap-southeast-1b", "ap-southeast-1c"]
   public_subnets   = ["10.16.48.0/20", "10.16.112.0/20", "10.16.176.0/20"] # Web tier
@@ -68,7 +66,6 @@ module "vpc" {
 
 module "vpc_endpoints" {
   source = "terraform-aws-modules/vpc/aws//modules/vpc-endpoints"
-  version = "~> 5.0"
   vpc_id = module.vpc.vpc_id
 
   create_security_group      = true

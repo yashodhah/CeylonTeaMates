@@ -1,8 +1,6 @@
 module "alb" {
-  source  = "terraform-aws-modules/alb/aws"
-  version = "~> 9.0"
-
-  name = local.name
+  source = "terraform-aws-modules/alb/aws"
+  name   = local.name
 
   load_balancer_type = "application"
 

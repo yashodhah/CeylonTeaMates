@@ -1,20 +1,15 @@
 module "ecs_cluster" {
   source = "terraform-aws-modules/ecs/aws//modules/cluster"
-
-  cluster_name = local.name
+  name   = local.name
 
   # Capacity provider
-  fargate_capacity_providers = {
+  default_capacity_provider_strategy = {
     FARGATE = {
-      default_capacity_provider_strategy = {
-        weight = 50
-        base   = 20
-      }
+      weight = 50
+      base   = 20
     }
     FARGATE_SPOT = {
-      default_capacity_provider_strategy = {
-        weight = 50
-      }
+      weight = 50
     }
   }
 
@@ -26,8 +21,8 @@ module "ecs_cluster" {
 ################################################################################
 
 module "ecs_teamates_core_service" {
-  source = "terraform-aws-modules/ecs/aws//modules/service"
-  name   = "teamates-service"
+  source      = "terraform-aws-modules/ecs/aws//modules/service"
+  name        = "teamates-service"
   cluster_arn = module.ecs_cluster.arn
 
   cpu    = 512
@@ -64,20 +59,21 @@ module "ecs_teamates_core_service" {
 
   subnet_ids = module.vpc.private_subnets
 
-  security_group_rules = {
-    alb_ingress = {
-      type                     = "ingress"
-      from_port                = 8080
-      to_port                  = 8080
-      protocol                 = "tcp"
-      source_security_group_id = module.alb.security_group_id
+  security_group_ingress_rules = {
+    alb_8080 = {
+      from_port                    = 8080
+      to_port                      = 8080
+      ip_protocol                  = "tcp"
+      description                  = "Service port"
+      referenced_security_group_id = module.alb.security_group_id
     }
-    egress_all = {
-      type        = "egress"
+  }
+  security_group_egress_rules = {
+    all = {
+      cidr_ipv4   = "0.0.0.0/0"
+      ip_protocol = "-1"
       from_port   = 0
       to_port     = 0
-      protocol    = "-1"
-      cidr_blocks = ["0.0.0.0/0"]
     }
   }
 
@@ -89,7 +85,7 @@ module "ecs_teamates_core_service" {
     }
   }
 
-  tasks_iam_role_name        = "${local.name}-teamates-service-task-role"
+  tasks_iam_role_name        = "${local.name}-core-svc-task-role"
   tasks_iam_role_description = "IAM role for teamates-service ECS task"
 
   tasks_iam_role_statements = [
